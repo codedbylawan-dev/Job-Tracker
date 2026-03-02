@@ -128,26 +128,138 @@ npm start
 
 ## 🌐 Deployment Guide
 
+### Prerequisites
+
+- GitHub account (repo already pushed ✓)
+- Render.com account (free tier OK)
+- Vercel account (free tier OK)
+
+---
+
 ### Backend → Render.com (Free)
 
-1. Go to [render.com](https://render.com) → New Web Service
-2. Connect your GitHub repo
-3. Set **Root Directory** to `backend`
-4. Set **Build Command**: `npm install`
-5. Set **Start Command**: `node server.js`
-6. Add Environment Variables:
-   - `JWT_SECRET` = your secret key
-   - `FRONTEND_URL` = your Vercel frontend URL
-7. Deploy → copy the URL (e.g. `https://job-tracker-api.onrender.com`)
+#### Step 1: Create Render Account
+
+1. Go to [render.com](https://render.com)
+2. Sign up with GitHub (easier authorization)
+3. Click **"New+"** → **"Web Service"**
+
+#### Step 2: Connect Your GitHub Repository
+
+1. Select **"Build and deploy from a Git repository"**
+2. Search for `Job-Tracker` repo → connect it
+3. Choose:
+   - **Name**: `job-tracker-api`
+   - **Root Directory**: `backend`
+   - **Runtime**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+
+#### Step 3: Add Environment Variables
+
+Click **"Add Environment Variable"** and add:
+
+```
+JWT_SECRET=your_super_secure_random_key_min_32_chars_example_AbCd1234EfGh5678IjKl9012MnOp!
+FRONTEND_URL=https://your-vercel-domain.vercel.app
+```
+
+_(Copy the Vercel URL later after deploying frontend)_
+
+#### Step 4: Deploy
+
+- Click **"Create Web Service"**
+- Wait for deployment (2-3 minutes)
+- Copy your **Render URL** → looks like `https://job-tracker-api.onrender.com`
+
+**Note:** Free tier may have brief startup delays on inactive services.
+
+---
 
 ### Frontend → Vercel (Free)
 
-1. Go to [vercel.com](https://vercel.com) → New Project
-2. Connect your GitHub repo
-3. Set **Root Directory** to `frontend`
-4. Add Environment Variable:
-   - `REACT_APP_API_URL` = `https://your-render-url.onrender.com/api`
-5. Deploy → your app is live!
+#### Step 1: Import Project to Vercel
+
+1. Go to [vercel.com](https://vercel.com)
+2. Click **"Add New"** → **"Project"**
+3. Select your GitHub repo `Job-Tracker` → **Import**
+
+#### Step 2: Configure Project
+
+Set these options:
+
+- **Framework Preset**: React
+- **Root Directory**: `frontend`
+- **Build Command**: `npm run build` (default)
+- **Output Directory**: `build` (default)
+
+#### Step 3: Add Environment Variables
+
+Click **"Environment Variables"** and add:
+
+```
+REACT_APP_API_URL=https://your-render-url.onrender.com/api
+```
+
+_(Use the Render URL from Step 4 above)_
+
+#### Step 4: Deploy
+
+- Click **"Deploy"**
+- Wait for build (3-5 minutes)
+- Get your **Vercel URL** → looks like `https://job-tracker-123abc.vercel.app`
+
+---
+
+### Final: Update Render's FRONTEND_URL
+
+After Vercel deployment completes:
+
+1. Go back to [Render Dashboard](https://dashboard.render.com)
+2. Select **`job-tracker-api`** service
+3. Go to **Settings** → **Environment**
+4. Update `FRONTEND_URL` with your Vercel URL
+5. Click **"Save Changes"** → triggers redeploy
+
+---
+
+### ✅ Test Deployment
+
+#### Test Backend
+
+```bash
+curl https://your-render-url.onrender.com/
+# Should return: {"message":"Job Tracker API is running ✅","version":"1.0.0"}
+```
+
+#### Test Frontend
+
+1. Open: `https://your-vercel-domain.vercel.app`
+2. Click **Register** → create new account
+3. Login with your credentials
+4. Should see the Dashboard with job tracking interface
+
+---
+
+### 🔧 Troubleshooting
+
+**Frontend shows API errors?**
+
+- Check `REACT_APP_API_URL` in Vercel environment
+- Ensure Render backend is running (check dashboard)
+- Wait 5 min for env changes to take effect (redeploy if needed)
+
+**Backend won't start on Render?**
+
+- Check **Logs** in Render dashboard
+- Ensure `JWT_SECRET` is set (min 32 chars)
+- Verify `FRONTEND_URL` is correct
+
+**Cold start delays?**
+
+- Render free tier spins down inactive services
+- First request may take 10-30 sec
+- Upgrade to paid for always-on
 
 ---
 
