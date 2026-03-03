@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+const API = process.env.REACT_APP_API_URL;
 console.log("API:", API);
 
 function Login() {
