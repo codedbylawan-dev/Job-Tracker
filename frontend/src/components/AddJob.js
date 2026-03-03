@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API = import.meta.env.VITE_API_URL;
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 function AddJob({ onClose, onAdd }) {
   const [form, setForm] = useState({
@@ -20,10 +20,6 @@ function AddJob({ onClose, onAdd }) {
   const handleSubmit = async () => {
     if (!form.company_name || !form.job_role || !form.applied_date) {
       return setError("Company name, job role, and date are required.");
-    }
-
-    if (!API) {
-      return setError("API URL not configured.");
     }
 
     const token = localStorage.getItem("token");
@@ -52,7 +48,7 @@ function AddJob({ onClose, onAdd }) {
 
       onAdd(data);
       onClose();
-    } catch (err) {
+    } catch {
       setError("Server error. Please try again.");
     } finally {
       setLoading(false);
@@ -171,11 +167,7 @@ const s = {
     borderRadius: "6px",
     border: "1px solid #ccc",
   },
-  actions: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "10px",
-  },
+  actions: { display: "flex", justifyContent: "flex-end", gap: "10px" },
   cancelBtn: { padding: "8px 12px" },
   submitBtn: {
     padding: "8px 12px",
