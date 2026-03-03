@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL;
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -11,22 +11,36 @@ function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    if (!email || !password) return setError("Both fields are required.");
+    if (!email || !password) {
+      return setError("Both fields are required.");
+    }
+
+    if (!API) {
+      return setError("API URL not configured.");
+    }
+
     setLoading(true);
     setError("");
+
     try {
       const res = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+
       const data = await res.json();
-      if (!res.ok) return setError(data.error);
+
+      if (!res.ok) {
+        return setError(data.error || "Login failed.");
+      }
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("username", data.username);
+
       navigate("/dashboard");
-    } catch {
-      setError("Cannot connect to server. Make sure the backend is running.");
+    } catch (err) {
+      setError("Cannot connect to server.");
     } finally {
       setLoading(false);
     }
@@ -51,6 +65,7 @@ function Login() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
+
         <div style={s.field}>
           <label style={s.label}>Password</label>
           <input
@@ -128,7 +143,6 @@ const s = {
     borderRadius: "8px",
     fontSize: "15px",
     outline: "none",
-    transition: "border-color .2s",
   },
   btn: {
     width: "100%",
